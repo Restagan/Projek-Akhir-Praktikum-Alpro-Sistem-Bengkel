@@ -111,7 +111,19 @@ void tambahPelanggan(Pelanggan db[], int *jml) {
 	if (*jml >= MAKS_DATA) {
 		cout << "Kapasitas penuh!\n"; return;
 	}
-	cout << "\nID Pelanggan : "; cin >> db[*jml].id;
+	bool duplikat;
+	do {
+		duplikat = false;
+		cout << "\nID Pelanggan : "; cin >> db[*jml].id;
+		for (int i = 0; i < *jml; i++) {
+			if (db[i].id == db[*jml].id) {
+				cout << "  [ERROR] ID Pelanggan sudah digunakan! Masukkan ID lain.\n";
+				duplikat = true;
+				break;
+			}
+		}
+	} while (duplikat);
+
 	cin.ignore();
 	cout << "Nama         : "; getline(cin, db[*jml].nama);
 	cout << "Telepon      : "; getline(cin, db[*jml].telp);
@@ -171,18 +183,30 @@ void menuPelanggan(Pelanggan db[], int *jml) {
 
 void tambahServis(Servis db[], int *jml) {
 	if (*jml >= MAKS_DATA) return;
-	cout << "\nID Servis    : "; cin >> db[*jml].id;
-		cin.ignore();
+	bool duplikat;
+	do {
+		duplikat = false;
+		cout << "\nID Servis    : "; cin >> db[*jml].id;
+		for (int i = 0; i < *jml; i++) {
+			if (db[i].id == db[*jml].id) {
+				cout << "  [ERROR] ID Servis sudah digunakan! Masukkan ID lain.\n";
+				duplikat = true;
+				break;
+			}
+		}
+	} while (duplikat);
+
+	cin.ignore();
 	cout << "ID Kendaraan : "; getline(cin, db[*jml].idkendaraan);
 	cout << "Keluhan      : "; getline(cin, db[*jml].keluhan);
 	cout << "Biaya        : "; cin >> db[*jml].biaya;
 	while (cin.fail()) {
-    cin.clear();
-    cin.ignore(10000, '\n');
-    cout << "[ERROR] Biaya harus berupa angka! Silakan masukkan lagi.\n";
-    cout << "Biaya        : "; 
-    cin >> db[*jml].biaya;
-}
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "[ERROR] Biaya harus berupa angka! Silakan masukkan lagi.\n";
+		cout << "Biaya        : "; 
+		cin >> db[*jml].biaya;
+	}
 	cin.ignore();
 	cout << "Status       : "; getline(cin, db[*jml].status);
 	
@@ -192,6 +216,7 @@ void tambahServis(Servis db[], int *jml) {
 
 void lihatServis(Servis db[], int jml) {
 	cout << "\n===== DATA SERVIS =====\n";
+	if (jml == 0) cout << "Belum ada data.\n";
 	for (int i = 0; i < jml; i++) {
 		cout << db[i].id << " | Kendaraan: " << db[i].idkendaraan 
 			 << " | Rp" << fixed << setprecision(0) << db[i].biaya << " | " << db[i].status << endl;
@@ -235,15 +260,26 @@ void menuServis(Servis db[], int *jml) {
 
 void tambahKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
 	if (*jml >= MAKS_DATA) return;
-	cout << "\nID Kendaraan : "; cin >> db[*jml].id;
+	bool duplikat;
+	do {
+		duplikat = false;
+		cout << "\nID Kendaraan : "; cin >> db[*jml].id;
+		for (int i = 0; i < *jml; i++) {
+			if (db[i].id == db[*jml].id) {
+				cout << "  [ERROR] ID Kendaraan sudah digunakan! Masukkan ID lain.\n";
+				duplikat = true;
+				break;
+			}
+		}
+	} while (duplikat);
+	// ------------------------------
 	
 	bool pelKetemu = false;
 	do {
 		cout << "ID Pelanggan (ketik 0 untuk batal): "; cin >> db[*jml].idpel;
-		
 		if (db[*jml].idpel == "0") {
 			cout << "\n[INFO] Penambahan data kendaraan dibatalkan.\n";
-			return;
+			return; 
 		}
 
 		for (int i = 0; i < jmlPel; i++) {
@@ -307,18 +343,30 @@ void menuKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
 
 void tambahRestorasi(Restorasi db[], int *jml) {
 	if (*jml >= MAKS_DATA) return;
-	cout << "\nID Restorasi : "; cin >> db[*jml].id;
-		cin.ignore();
+	bool duplikat;
+	do {
+		duplikat = false;
+		cout << "\nID Restorasi : "; cin >> db[*jml].id;
+		for (int i = 0; i < *jml; i++) {
+			if (db[i].id == db[*jml].id) {
+				cout << "  [ERROR] ID Restorasi sudah digunakan! Masukkan ID lain.\n";
+				duplikat = true;
+				break;
+			}
+		}
+	} while (duplikat);
+
+	cin.ignore();
 	cout << "ID Kendaraan : "; getline(cin, db[*jml].idkendaraan);
 	cout << "Deskripsi    : "; getline(cin, db[*jml].deskripsi);
 	cout << "Biaya/Est    : "; cin >> db[*jml].biaya;
 	while (cin.fail()) {
-    cin.clear();
-    cin.ignore(10000, '\n');
-    cout << "[ERROR] Biaya harus berupa angka! Silakan masukkan lagi.\n";
-    cout << "Biaya        : "; 
-    cin >> db[*jml].biaya;
-}
+		cin.clear();
+		cin.ignore(10000, '\n');
+		cout << "[ERROR] Biaya harus berupa angka! Silakan masukkan lagi.\n";
+		cout << "Biaya        : "; 
+		cin >> db[*jml].biaya;
+	}
 	cin.ignore();
 	cout << "Status       : "; getline(cin, db[*jml].status);
 	
