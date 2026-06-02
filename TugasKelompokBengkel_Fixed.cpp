@@ -237,10 +237,15 @@ void tambahKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
 	if (*jml >= MAKS_DATA) return;
 	cout << "\nID Kendaraan : "; cin >> db[*jml].id;
 	
-	// Validasi Relasi ID Pelanggan
 	bool pelKetemu = false;
 	do {
-		cout << "ID Pelanggan : "; cin >> db[*jml].idpel;
+		cout << "ID Pelanggan (ketik 0 untuk batal): "; cin >> db[*jml].idpel;
+		
+		if (db[*jml].idpel == "0") {
+			cout << "\n[INFO] Penambahan data kendaraan dibatalkan.\n";
+			return;
+		}
+
 		for (int i = 0; i < jmlPel; i++) {
 			if (dbPel[i].id == db[*jml].idpel) {
 				pelKetemu = true;
