@@ -181,8 +181,10 @@ void menuPelanggan(Pelanggan db[], int *jml) {
 	} while(pilih != 0);
 }
 
-void tambahServis(Servis db[], int *jml) {
+void tambahServis(Servis db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 	if (*jml >= MAKS_DATA) return;
+	
+	// --- VALIDASI ANTI DUPLIKAT ---
 	bool duplikat;
 	do {
 		duplikat = false;
@@ -195,9 +197,28 @@ void tambahServis(Servis db[], int *jml) {
 			}
 		}
 	} while (duplikat);
-
 	cin.ignore();
-	cout << "ID Kendaraan : "; getline(cin, db[*jml].idkendaraan);
+	
+	bool kenKetemu = false;
+	do {
+		cout << "ID Kendaraan (ketik 0 untuk batal): "; getline(cin, db[*jml].idkendaraan);
+		if (db[*jml].idkendaraan == "0") {
+			cout << "\n[INFO] Penambahan data servis dibatalkan.\n";
+			return; 
+		}
+
+		for (int i = 0; i < jmlKen; i++) {
+			if (dbKen[i].id == db[*jml].idkendaraan) {
+				kenKetemu = true;
+				cout << "  -> Kendaraan Ditemukan: " << dbKen[i].merk << " (" << dbKen[i].nopol << ")\n"; 
+				break;
+			}
+		}
+		if (!kenKetemu) {
+			cout << "  [ERROR] ID Kendaraan tidak terdaftar! Harap masukkan ID yang valid.\n";
+		}
+	} while (!kenKetemu);
+
 	cout << "Keluhan      : "; getline(cin, db[*jml].keluhan);
 	cout << "Biaya        : "; cin >> db[*jml].biaya;
 	while (cin.fail()) {
@@ -237,7 +258,7 @@ void urutkanServis(Servis db[], int jml) {
 	lihatServis(db, jml);
 }
 
-void menuServis(Servis db[], int *jml) {
+void menuServis(Servis db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 	int p;
 	do {
 		cout << "\n=== MENU SERVIS ===\n";
@@ -251,7 +272,7 @@ void menuServis(Servis db[], int *jml) {
 			continue;
 		}
 		switch(p) {
-			case 1: tambahServis(db, jml); break;
+			case 1: tambahServis(db, jml, dbKen, jmlKen); break;
 			case 2: lihatServis(db, *jml); break;
 			case 3: urutkanServis(db, *jml); break;
 		}
@@ -341,8 +362,9 @@ void menuKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
 	} while(p != 0);
 }
 
-void tambahRestorasi(Restorasi db[], int *jml) {
+void tambahRestorasi(Restorasi db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 	if (*jml >= MAKS_DATA) return;
+	
 	bool duplikat;
 	do {
 		duplikat = false;
@@ -357,7 +379,27 @@ void tambahRestorasi(Restorasi db[], int *jml) {
 	} while (duplikat);
 
 	cin.ignore();
-	cout << "ID Kendaraan : "; getline(cin, db[*jml].idkendaraan);
+
+	bool kenKetemu = false;
+	do {
+		cout << "ID Kendaraan (ketik 0 untuk batal): "; getline(cin, db[*jml].idkendaraan);
+		if (db[*jml].idkendaraan == "0") {
+			cout << "\n[INFO] Penambahan data restorasi dibatalkan.\n";
+			return; 
+		}
+
+		for (int i = 0; i < jmlKen; i++) {
+			if (dbKen[i].id == db[*jml].idkendaraan) {
+				kenKetemu = true;
+				cout << "  -> Kendaraan Ditemukan: " << dbKen[i].merk << " (" << dbKen[i].nopol << ")\n"; 
+				break;
+			}
+		}
+		if (!kenKetemu) {
+			cout << "  [ERROR] ID Kendaraan tidak terdaftar! Harap masukkan ID yang valid.\n";
+		}
+	} while (!kenKetemu);
+
 	cout << "Deskripsi    : "; getline(cin, db[*jml].deskripsi);
 	cout << "Biaya/Est    : "; cin >> db[*jml].biaya;
 	while (cin.fail()) {
@@ -383,7 +425,7 @@ void lihatRestorasi(Restorasi db[], int jml) {
 	}
 }
 
-void menuRestorasi(Restorasi db[], int *jml) {
+void menuRestorasi(Restorasi db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 	int p;
 	do {
 		cout << "\n=== MENU RESTORASI ===\n";
@@ -397,7 +439,7 @@ void menuRestorasi(Restorasi db[], int *jml) {
 			continue;
 		}
 		switch(p) {
-			case 1: tambahRestorasi(db, jml); break;
+			case 1: tambahRestorasi(db, jml, dbKen, jmlKen); break;
 			case 2: lihatRestorasi(db, *jml); break;
 		}
 	} while(p != 0);
@@ -446,8 +488,8 @@ int main() {
 		switch(pilih) {
 			case 1: menuPelanggan(dbPelanggan, &jmlPelanggan); break;
 			case 2: menuKendaraan(dbKendaraan, &jmlKendaraan, dbPelanggan, jmlPelanggan); break;
-			case 3: menuServis(dbServis, &jmlServis); break;
-			case 4: menuRestorasi(dbRestorasi, &jmlRestorasi); break;
+			case 3: menuServis(dbServis, &jmlServis, dbKendaraan, jmlKendaraan); break;
+			case 4: menuRestorasi(dbRestorasi, &jmlRestorasi, dbKendaraan, jmlKendaraan); break;
 			case 0: 
 				simpanDataPelanggan(dbPelanggan, jmlPelanggan);
 				simpanDataServis(dbServis, jmlServis);
