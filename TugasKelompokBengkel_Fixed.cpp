@@ -233,10 +233,26 @@ void menuServis(Servis db[], int *jml) {
 	} while(p != 0);
 }
 
-void tambahKendaraan(Kendaraan db[], int *jml) {
+void tambahKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
 	if (*jml >= MAKS_DATA) return;
 	cout << "\nID Kendaraan : "; cin >> db[*jml].id;
-	cout << "ID Pelanggan : "; cin >> db[*jml].idpel;
+	
+	// Validasi Relasi ID Pelanggan
+	bool pelKetemu = false;
+	do {
+		cout << "ID Pelanggan : "; cin >> db[*jml].idpel;
+		for (int i = 0; i < jmlPel; i++) {
+			if (dbPel[i].id == db[*jml].idpel) {
+				pelKetemu = true;
+				cout << "  -> Pemilik Ditemukan: " << dbPel[i].nama << "\n"; 
+				break;
+			}
+		}
+		if (!pelKetemu) {
+			cout << "  [ERROR] ID Pelanggan tidak terdaftar! Harap masukkan ID yang valid.\n";
+		}
+	} while (!pelKetemu);
+
 	cin.ignore();
 	cout << "Merk/Tipe    : "; getline(cin, db[*jml].merk);
 	cout << "No Polisi    : "; getline(cin, db[*jml].nopol);
@@ -246,16 +262,25 @@ void tambahKendaraan(Kendaraan db[], int *jml) {
 	cout << "Data kendaraan berhasil ditambahkan!\n";
 }
 
-void lihatKendaraan(Kendaraan db[], int jml) {
+void lihatKendaraan(Kendaraan db[], int jml, Pelanggan dbPel[], int jmlPel) {
 	cout << "\n===== DATA KENDARAAN =====\n";
 	if (jml == 0) cout << "Belum ada data.\n";
 	for (int i = 0; i < jml; i++) {
-		cout << db[i].id << " | Pemilik ID: " << db[i].idpel << " | " 
+
+		string namaPemilik = "Tidak Diketahui";
+		for (int j = 0; j < jmlPel; j++) {
+			if (dbPel[j].id == db[i].idpel) {
+				namaPemilik = dbPel[j].nama;
+				break;
+			}
+		}
+		
+		cout << db[i].id << " | Pemilik: " << namaPemilik << " (ID: " << db[i].idpel << ") | " 
 			 << db[i].merk << " | " << db[i].nopol << " | " << db[i].tahun << endl;
 	}
 }
 
-void menuKendaraan(Kendaraan db[], int *jml) {
+void menuKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
 	int p;
 	do {
 		cout << "\n=== MENU KENDARAAN ===\n";
@@ -269,8 +294,8 @@ void menuKendaraan(Kendaraan db[], int *jml) {
 			continue;
 		}
 		switch(p) {
-			case 1: tambahKendaraan(db, jml); break;
-			case 2: lihatKendaraan(db, *jml); break;
+			case 1: tambahKendaraan(db, jml, dbPel, jmlPel); break; 
+			case 2: lihatKendaraan(db, *jml, dbPel, jmlPel); break;
 		}
 	} while(p != 0);
 }
@@ -367,7 +392,7 @@ int main() {
 		}
 		switch(pilih) {
 			case 1: menuPelanggan(dbPelanggan, &jmlPelanggan); break;
-			case 2: menuKendaraan(dbKendaraan, &jmlKendaraan); break;
+			case 2: menuKendaraan(dbKendaraan, &jmlKendaraan, dbPelanggan, jmlPelanggan); break;
 			case 3: menuServis(dbServis, &jmlServis); break;
 			case 4: menuRestorasi(dbRestorasi, &jmlRestorasi); break;
 			case 0: 
