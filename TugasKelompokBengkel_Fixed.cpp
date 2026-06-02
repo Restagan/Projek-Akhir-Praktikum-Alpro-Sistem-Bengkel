@@ -12,60 +12,27 @@ struct Restorasi { string id, idkendaraan, deskripsi, status; double biaya; };
 
 const int MAKS_DATA = 100;
 
+string keUnderscore(string teks) {
+	for (size_t i = 0; i < teks.length(); i++) {
+		if (teks[i] == ' ') teks[i] = '_';
+	}
+	return teks;
+}
+
+string keSpasi(string teks) {
+	for (size_t i = 0; i < teks.length(); i++) {
+		if (teks[i] == '_') teks[i] = ' ';
+	}
+	return teks;
+}
 void muatDataPelanggan(Pelanggan db[], int *jml) {
-	ifstream file("pelanggan.txt");
+	ifstream file("Database/pelanggan.txt");
 	*jml = 0;
 	if (file.is_open()) {
-		while (*jml < MAKS_DATA && getline(file, db[*jml].id)) {
-			getline(file, db[*jml].nama);
-			getline(file, db[*jml].telp);
-			getline(file, db[*jml].alamat);
-			(*jml)++;
-		}
-		file.close();
-	}
-}
-
-void muatDataServis(Servis db[], int *jml) {
-	ifstream file("servis.txt");
-	*jml = 0;
-	if (file.is_open()) {
-		while (*jml < MAKS_DATA && getline(file, db[*jml].id)) {
-			getline(file, db[*jml].idkendaraan);
-			getline(file, db[*jml].keluhan);
-			file >> db[*jml].biaya;
-			file.ignore();
-			getline(file, db[*jml].status);
-			(*jml)++;
-		}
-		file.close();
-	}
-}
-void muatDataKendaraan(Kendaraan db[], int *jml) {
-	ifstream file("kendaraan.txt");
-	*jml = 0;
-	if (file.is_open()) {
-		while (*jml < MAKS_DATA && getline(file, db[*jml].id)) {
-			getline(file, db[*jml].idpel);
-			getline(file, db[*jml].merk);
-			getline(file, db[*jml].nopol);
-			getline(file, db[*jml].tahun);
-			(*jml)++;
-		}
-		file.close();
-	}
-}
-
-void muatDataRestorasi(Restorasi db[], int *jml) {
-	ifstream file("restorasi.txt");
-	*jml = 0;
-	if (file.is_open()) {
-		while (*jml < MAKS_DATA && getline(file, db[*jml].id)) {
-			getline(file, db[*jml].idkendaraan);
-			getline(file, db[*jml].deskripsi);
-			file >> db[*jml].biaya;
-			file.ignore();
-			getline(file, db[*jml].status);
+		while (*jml < MAKS_DATA && file >> db[*jml].id) {
+			file >> db[*jml].nama;   db[*jml].nama = keSpasi(db[*jml].nama);
+			file >> db[*jml].telp;
+			file >> db[*jml].alamat; db[*jml].alamat = keSpasi(db[*jml].alamat);
 			(*jml)++;
 		}
 		file.close();
@@ -73,36 +40,93 @@ void muatDataRestorasi(Restorasi db[], int *jml) {
 }
 
 void simpanDataPelanggan(Pelanggan db[], int jml) {
-	ofstream file("pelanggan.txt");
+	ofstream file("Database/pelanggan.txt");
 	for (int i = 0; i < jml; i++) {
-		file << db[i].id << "\n" << db[i].nama << "\n" 
-			 << db[i].telp << "\n" << db[i].alamat << "\n";
+		file << db[i].id << " " 
+			 << keUnderscore(db[i].nama) << " " 
+			 << db[i].telp << " " 
+			 << keUnderscore(db[i].alamat) << "\n";
 	}
 	file.close();
+}
+
+void muatDataKendaraan(Kendaraan db[], int *jml) {
+	ifstream file("Database/kendaraan.txt");
+	*jml = 0;
+	if (file.is_open()) {
+		while (*jml < MAKS_DATA && file >> db[*jml].id) {
+			file >> db[*jml].idpel;
+			file >> db[*jml].merk;  db[*jml].merk = keSpasi(db[*jml].merk);
+			file >> db[*jml].nopol; db[*jml].nopol = keSpasi(db[*jml].nopol);
+			file >> db[*jml].tahun;
+			(*jml)++;
+		}
+		file.close();
+	}
+}
+
+void simpanDataKendaraan(Kendaraan db[], int jml) {
+	ofstream file("Database/kendaraan.txt");
+	for (int i = 0; i < jml; i++) {
+		file << db[i].id << " " 
+			 << db[i].idpel << " " 
+			 << keUnderscore(db[i].merk) << " " 
+			 << keUnderscore(db[i].nopol) << " " 
+			 << db[i].tahun << "\n";
+	}
+	file.close();
+}
+
+void muatDataServis(Servis db[], int *jml) {
+	ifstream file("Database/servis.txt");
+	*jml = 0;
+	if (file.is_open()) {
+		while (*jml < MAKS_DATA && file >> db[*jml].id) {
+			file >> db[*jml].idkendaraan;
+			file >> db[*jml].keluhan; db[*jml].keluhan = keSpasi(db[*jml].keluhan);
+			file >> db[*jml].status;  db[*jml].status = keSpasi(db[*jml].status);
+			file >> db[*jml].biaya;
+			(*jml)++;
+		}
+		file.close();
+	}
 }
 
 void simpanDataServis(Servis db[], int jml) {
-	ofstream file("servis.txt");
+	ofstream file("Database/servis.txt");
 	for (int i = 0; i < jml; i++) {
-		file << db[i].id << "\n" << db[i].idkendaraan << "\n" 
-			 << db[i].keluhan << "\n" << db[i].biaya << "\n" << db[i].status << "\n";
-	}
-	file.close();
-}
-void simpanDataKendaraan(Kendaraan db[], int jml) {
-	ofstream file("kendaraan.txt");
-	for (int i = 0; i < jml; i++) {
-		file << db[i].id << "\n" << db[i].idpel << "\n" 
-			 << db[i].merk << "\n" << db[i].nopol << "\n" << db[i].tahun << "\n";
+		file << db[i].id << " " 
+			 << db[i].idkendaraan << " " 
+			 << keUnderscore(db[i].keluhan) << " " 
+			 << keUnderscore(db[i].status) << " " 
+			 << fixed << setprecision(0) << db[i].biaya << "\n";
 	}
 	file.close();
 }
 
+void muatDataRestorasi(Restorasi db[], int *jml) {
+	ifstream file("Database/restorasi.txt");
+	*jml = 0;
+	if (file.is_open()) {
+		while (*jml < MAKS_DATA && file >> db[*jml].id) {
+			file >> db[*jml].idkendaraan;
+			file >> db[*jml].deskripsi; db[*jml].deskripsi = keSpasi(db[*jml].deskripsi);
+			file >> db[*jml].status;    db[*jml].status = keSpasi(db[*jml].status);
+			file >> db[*jml].biaya;
+			(*jml)++;
+		}
+		file.close();
+	}
+}
+
 void simpanDataRestorasi(Restorasi db[], int jml) {
-	ofstream file("restorasi.txt");
+	ofstream file("Database/restorasi.txt");
 	for (int i = 0; i < jml; i++) {
-		file << db[i].id << "\n" << db[i].idkendaraan << "\n" 
-			 << db[i].deskripsi << "\n" << db[i].biaya << "\n" << db[i].status << "\n";
+		file << db[i].id << " " 
+			 << db[i].idkendaraan << " " 
+			 << keUnderscore(db[i].deskripsi) << " " 
+			 << keUnderscore(db[i].status) << " " 
+			 << fixed << setprecision(0) << db[i].biaya << "\n";
 	}
 	file.close();
 }
@@ -488,12 +512,12 @@ int main() {
 			case 2: menuKendaraan(dbKendaraan, &jmlKendaraan, dbPelanggan, jmlPelanggan); break;
 			case 3: menuServis(dbServis, &jmlServis, dbKendaraan, jmlKendaraan); break;
 			case 4: menuRestorasi(dbRestorasi, &jmlRestorasi, dbKendaraan, jmlKendaraan); break;
-			case 0: 
+case 0: 
 				simpanDataPelanggan(dbPelanggan, jmlPelanggan);
 				simpanDataServis(dbServis, jmlServis);
 				simpanDataKendaraan(dbKendaraan, jmlKendaraan);
 				simpanDataRestorasi(dbRestorasi, jmlRestorasi);
-				cout << "Seluruh data berhasil disimpan ke File .txt!\n";
+				cout << "Seluruh data berhasil disimpan ke folder Database (format .txt spasi)!\n";
 				break;
 		}
 	} while(pilih != 0);
