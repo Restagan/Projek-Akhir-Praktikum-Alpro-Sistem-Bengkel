@@ -184,7 +184,6 @@ void menuPelanggan(Pelanggan db[], int *jml) {
 void tambahServis(Servis db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 	if (*jml >= MAKS_DATA) return;
 	
-	// --- VALIDASI ANTI DUPLIKAT ---
 	bool duplikat;
 	do {
 		duplikat = false;
@@ -293,7 +292,6 @@ void tambahKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
 			}
 		}
 	} while (duplikat);
-	// ------------------------------
 	
 	bool pelKetemu = false;
 	do {
