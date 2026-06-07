@@ -25,6 +25,7 @@ string keSpasi(string teks) {
 	}
 	return teks;
 }
+
 void muatDataPelanggan(Pelanggan db[], int *jml) {
 	ifstream file("Database/pelanggan.txt");
 	*jml = 0;
@@ -184,11 +185,31 @@ void cariPelanggan(Pelanggan db[], int jml) {
 	if (!ketemu) cout << "Data pelanggan tidak ditemukan.\n";
 }
 
+void hapusPelanggan(Pelanggan db[], int *jml) {
+	string idHapus;
+	cout << "\nMasukkan ID Pelanggan yang akan dihapus: ";
+	cin >> idHapus;
+	bool ketemu = false;
+
+	for (int i = 0; i < *jml; i++) {
+		if (db[i].id == idHapus) {
+			ketemu = true;
+			for (int j = i; j < *jml - 1; j++) {
+				db[j] = db[j + 1];
+			}
+			(*jml)--;
+			cout << "Data pelanggan berhasil dihapus!\n";
+			break;
+		}
+	}
+	if (!ketemu) cout << "Data pelanggan tidak ditemukan.\n";
+}
+
 void menuPelanggan(Pelanggan db[], int *jml) {
 	int pilih;
 	do {
 		cout << "\n=== MENU PELANGGAN ===\n";
-		cout << "1. Tambah\n2. Lihat\n3. Cari\n0. Kembali\nPilih : ";
+		cout << "1. Tambah\n2. Lihat\n3. Cari\n4. Hapus\n0. Kembali\nPilih : ";
 		cin >> pilih;
 		if (cin.fail()) {
 			cin.clear();
@@ -201,8 +222,110 @@ void menuPelanggan(Pelanggan db[], int *jml) {
 			case 1: tambahPelanggan(db, jml); break;
 			case 2: lihatPelanggan(db, *jml); break;
 			case 3: cariPelanggan(db, *jml); break;
+			case 4: hapusPelanggan(db, jml); break;
 		}
 	} while(pilih != 0);
+}
+
+void tambahKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
+	if (*jml >= MAKS_DATA) return;
+	bool duplikat;
+	do {
+		duplikat = false;
+		cout << "\nID Kendaraan : "; cin >> db[*jml].id;
+		for (int i = 0; i < *jml; i++) {
+			if (db[i].id == db[*jml].id) {
+				cout << "  [ERROR] ID Kendaraan sudah digunakan! Masukkan ID lain.\n";
+				duplikat = true;
+				break;
+			}
+		}
+	} while (duplikat);
+	
+	bool pelKetemu = false;
+	do {
+		cout << "ID Pelanggan (ketik 0 untuk batal): "; cin >> db[*jml].idpel;
+		if (db[*jml].idpel == "0") {
+			cout << "\n[INFO] Penambahan data kendaraan dibatalkan.\n";
+			return; 
+		}
+
+		for (int i = 0; i < jmlPel; i++) {
+			if (dbPel[i].id == db[*jml].idpel) {
+				pelKetemu = true;
+				cout << "  -> Pemilik Ditemukan: " << dbPel[i].nama << "\n"; 
+				break;
+			}
+		}
+		if (!pelKetemu) {
+			cout << "  [ERROR] ID Pelanggan tidak terdaftar! Harap masukkan ID yang valid.\n";
+		}
+	} while (!pelKetemu);
+
+	cin.ignore();
+	cout << "Merk/Tipe    : "; getline(cin, db[*jml].merk);
+	cout << "No Polisi    : "; getline(cin, db[*jml].nopol);
+	cout << "Tahun        : "; getline(cin, db[*jml].tahun);
+	
+	(*jml)++;
+	cout << "Data kendaraan berhasil ditambahkan!\n";
+}
+
+void lihatKendaraan(Kendaraan db[], int jml, Pelanggan dbPel[], int jmlPel) {
+	cout << "\n===== DATA KENDARAAN =====\n";
+	if (jml == 0) cout << "Belum ada data.\n";
+	for (int i = 0; i < jml; i++) {
+		string namaPemilik = "Tidak Diketahui";
+		for (int j = 0; j < jmlPel; j++) {
+			if (dbPel[j].id == db[i].idpel) {
+				namaPemilik = dbPel[j].nama;
+				break;
+			}
+		}
+		cout << db[i].id << " | Pemilik: " << namaPemilik << " (ID: " << db[i].idpel << ") | " 
+			 << db[i].merk << " | " << db[i].nopol << " | " << db[i].tahun << endl;
+	}
+}
+
+void hapusKendaraan(Kendaraan db[], int *jml) {
+	string idHapus;
+	cout << "\nMasukkan ID Kendaraan yang akan dihapus: ";
+	cin >> idHapus;
+	bool ketemu = false;
+
+	for (int i = 0; i < *jml; i++) {
+		if (db[i].id == idHapus) {
+			ketemu = true;
+			for (int j = i; j < *jml - 1; j++) {
+				db[j] = db[j + 1];
+			}
+			(*jml)--;
+			cout << "Data kendaraan berhasil dihapus!\n";
+			break;
+		}
+	}
+	if (!ketemu) cout << "Data kendaraan tidak ditemukan.\n";
+}
+
+void menuKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
+	int p;
+	do {
+		cout << "\n=== MENU KENDARAAN ===\n";
+		cout << "1. Tambah\n2. Lihat\n3. Hapus\n0. Kembali\nPilih : ";
+		cin >> p;
+		if (cin.fail()) {
+			cin.clear();
+			cin.ignore(10000, '\n');
+			cout << "\n[ERROR] Input tidak valid! Harap masukkan ANGKA.\n";
+			p = -1;
+			continue;
+		}
+		switch(p) {
+			case 1: tambahKendaraan(db, jml, dbPel, jmlPel); break; 
+			case 2: lihatKendaraan(db, *jml, dbPel, jmlPel); break;
+			case 3: hapusKendaraan(db, jml); break;
+		}
+	} while(p != 0);
 }
 
 void tambahServis(Servis db[], int *jml, Kendaraan dbKen[], int jmlKen) {
@@ -263,7 +386,7 @@ void lihatServis(Servis db[], int jml) {
 	if (jml == 0) cout << "Belum ada data.\n";
 	for (int i = 0; i < jml; i++) {
 		cout << db[i].id << " | Kendaraan: " << db[i].idkendaraan 
-			 << " | Rp" << fixed << setprecision(0) << db[i].biaya << " | " << db[i].status << endl;
+			 << " | Rp" << fixed << setprecision(0) << db[i].biaya << " | Status: " << db[i].status << endl;
 	}
 }
 
@@ -281,11 +404,51 @@ void urutkanServis(Servis db[], int jml) {
 	lihatServis(db, jml);
 }
 
+void ubahStatusServis(Servis db[], int jml) {
+	string idUbah;
+	cout << "\nMasukkan ID Servis yang akan diubah statusnya: ";
+	cin >> idUbah;
+	bool ketemu = false;
+
+	for (int i = 0; i < jml; i++) {
+		if (db[i].id == idUbah) {
+			ketemu = true;
+			cout << "Status saat ini : " << db[i].status << "\n";
+			cin.ignore();
+			cout << "Status baru     : ";
+			getline(cin, db[i].status);
+			cout << "Status berhasil diperbarui!\n";
+			break;
+		}
+	}
+	if (!ketemu) cout << "Data servis tidak ditemukan.\n";
+}
+
+void hapusServis(Servis db[], int *jml) {
+	string idHapus;
+	cout << "\nMasukkan ID Servis yang akan dihapus: ";
+	cin >> idHapus;
+	bool ketemu = false;
+
+	for (int i = 0; i < *jml; i++) {
+		if (db[i].id == idHapus) {
+			ketemu = true;
+			for (int j = i; j < *jml - 1; j++) {
+				db[j] = db[j + 1];
+			}
+			(*jml)--;
+			cout << "Data servis berhasil dihapus!\n";
+			break;
+		}
+	}
+	if (!ketemu) cout << "Data servis tidak ditemukan.\n";
+}
+
 void menuServis(Servis db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 	int p;
 	do {
 		cout << "\n=== MENU SERVIS ===\n";
-		cout << "1. Tambah\n2. Lihat\n3. Urutkan berdasar Biaya\n0. Kembali\nPilih : ";
+		cout << "1. Tambah\n2. Lihat\n3. Urutkan berdasar Biaya\n4. Ubah Status\n5. Hapus\n0. Kembali\nPilih : ";
 		cin >> p;
 		if (cin.fail()) {
 			cin.clear();
@@ -298,88 +461,8 @@ void menuServis(Servis db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 			case 1: tambahServis(db, jml, dbKen, jmlKen); break;
 			case 2: lihatServis(db, *jml); break;
 			case 3: urutkanServis(db, *jml); break;
-		}
-	} while(p != 0);
-}
-
-void tambahKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
-	if (*jml >= MAKS_DATA) return;
-	bool duplikat;
-	do {
-		duplikat = false;
-		cout << "\nID Kendaraan : "; cin >> db[*jml].id;
-		for (int i = 0; i < *jml; i++) {
-			if (db[i].id == db[*jml].id) {
-				cout << "  [ERROR] ID Kendaraan sudah digunakan! Masukkan ID lain.\n";
-				duplikat = true;
-				break;
-			}
-		}
-	} while (duplikat);
-	
-	bool pelKetemu = false;
-	do {
-		cout << "ID Pelanggan (ketik 0 untuk batal): "; cin >> db[*jml].idpel;
-		if (db[*jml].idpel == "0") {
-			cout << "\n[INFO] Penambahan data kendaraan dibatalkan.\n";
-			return; 
-		}
-
-		for (int i = 0; i < jmlPel; i++) {
-			if (dbPel[i].id == db[*jml].idpel) {
-				pelKetemu = true;
-				cout << "  -> Pemilik Ditemukan: " << dbPel[i].nama << "\n"; 
-				break;
-			}
-		}
-		if (!pelKetemu) {
-			cout << "  [ERROR] ID Pelanggan tidak terdaftar! Harap masukkan ID yang valid.\n";
-		}
-	} while (!pelKetemu);
-
-	cin.ignore();
-	cout << "Merk/Tipe    : "; getline(cin, db[*jml].merk);
-	cout << "No Polisi    : "; getline(cin, db[*jml].nopol);
-	cout << "Tahun        : "; getline(cin, db[*jml].tahun);
-	
-	(*jml)++;
-	cout << "Data kendaraan berhasil ditambahkan!\n";
-}
-
-void lihatKendaraan(Kendaraan db[], int jml, Pelanggan dbPel[], int jmlPel) {
-	cout << "\n===== DATA KENDARAAN =====\n";
-	if (jml == 0) cout << "Belum ada data.\n";
-	for (int i = 0; i < jml; i++) {
-
-		string namaPemilik = "Tidak Diketahui";
-		for (int j = 0; j < jmlPel; j++) {
-			if (dbPel[j].id == db[i].idpel) {
-				namaPemilik = dbPel[j].nama;
-				break;
-			}
-		}
-		
-		cout << db[i].id << " | Pemilik: " << namaPemilik << " (ID: " << db[i].idpel << ") | " 
-			 << db[i].merk << " | " << db[i].nopol << " | " << db[i].tahun << endl;
-	}
-}
-
-void menuKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
-	int p;
-	do {
-		cout << "\n=== MENU KENDARAAN ===\n";
-		cout << "1. Tambah\n2. Lihat\n0. Kembali\nPilih : ";
-		cin >> p;
-		if (cin.fail()) {
-			cin.clear();
-			cin.ignore(10000, '\n');
-			cout << "\n[ERROR] Input tidak valid! Harap masukkan ANGKA.\n";
-			p = -1;
-			continue;
-		}
-		switch(p) {
-			case 1: tambahKendaraan(db, jml, dbPel, jmlPel); break; 
-			case 2: lihatKendaraan(db, *jml, dbPel, jmlPel); break;
+			case 4: ubahStatusServis(db, *jml); break;
+			case 5: hapusServis(db, jml); break;
 		}
 	} while(p != 0);
 }
@@ -443,15 +526,55 @@ void lihatRestorasi(Restorasi db[], int jml) {
 	if (jml == 0) cout << "Belum ada data.\n";
 	for (int i = 0; i < jml; i++) {
 		cout << db[i].id << " | Kendaraan ID: " << db[i].idkendaraan << " | " 
-			 << db[i].deskripsi << " | Rp" << fixed << setprecision(0) << db[i].biaya << " | " << db[i].status << endl;
+			 << db[i].deskripsi << " | Rp" << fixed << setprecision(0) << db[i].biaya << " | Status: " << db[i].status << endl;
 	}
+}
+
+void ubahStatusRestorasi(Restorasi db[], int jml) {
+	string idUbah;
+	cout << "\nMasukkan ID Restorasi yang akan diubah statusnya: ";
+	cin >> idUbah;
+	bool ketemu = false;
+
+	for (int i = 0; i < jml; i++) {
+		if (db[i].id == idUbah) {
+			ketemu = true;
+			cout << "Status saat ini : " << db[i].status << "\n";
+			cin.ignore();
+			cout << "Status baru     : ";
+			getline(cin, db[i].status);
+			cout << "Status berhasil diperbarui!\n";
+			break;
+		}
+	}
+	if (!ketemu) cout << "Data restorasi tidak ditemukan.\n";
+}
+
+void hapusRestorasi(Restorasi db[], int *jml) {
+	string idHapus;
+	cout << "\nMasukkan ID Restorasi yang akan dihapus: ";
+	cin >> idHapus;
+	bool ketemu = false;
+
+	for (int i = 0; i < *jml; i++) {
+		if (db[i].id == idHapus) {
+			ketemu = true;
+			for (int j = i; j < *jml - 1; j++) {
+				db[j] = db[j + 1];
+			}
+			(*jml)--;
+			cout << "Data restorasi berhasil dihapus!\n";
+			break;
+		}
+	}
+	if (!ketemu) cout << "Data restorasi tidak ditemukan.\n";
 }
 
 void menuRestorasi(Restorasi db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 	int p;
 	do {
 		cout << "\n=== MENU RESTORASI ===\n";
-		cout << "1. Tambah\n2. Lihat\n0. Kembali\nPilih : ";
+		cout << "1. Tambah\n2. Lihat\n3. Ubah Status\n4. Hapus\n0. Kembali\nPilih : ";
 		cin >> p;
 		if (cin.fail()) {
 			cin.clear();
@@ -463,6 +586,8 @@ void menuRestorasi(Restorasi db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 		switch(p) {
 			case 1: tambahRestorasi(db, jml, dbKen, jmlKen); break;
 			case 2: lihatRestorasi(db, *jml); break;
+			case 3: ubahStatusRestorasi(db, *jml); break;
+			case 4: hapusRestorasi(db, jml); break;
 		}
 	} while(p != 0);
 }
@@ -512,7 +637,7 @@ int main() {
 			case 2: menuKendaraan(dbKendaraan, &jmlKendaraan, dbPelanggan, jmlPelanggan); break;
 			case 3: menuServis(dbServis, &jmlServis, dbKendaraan, jmlKendaraan); break;
 			case 4: menuRestorasi(dbRestorasi, &jmlRestorasi, dbKendaraan, jmlKendaraan); break;
-case 0: 
+			case 0: 
 				simpanDataPelanggan(dbPelanggan, jmlPelanggan);
 				simpanDataServis(dbServis, jmlServis);
 				simpanDataKendaraan(dbKendaraan, jmlKendaraan);
