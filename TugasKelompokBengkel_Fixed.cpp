@@ -444,11 +444,18 @@ void hapusServis(Servis db[], int *jml) {
 	if (!ketemu) cout << "Data servis tidak ditemukan.\n";
 }
 
+double hitungTotalPendapatanServis(Servis db[], int n) {
+	if (n <= 0) {
+		return 0; 
+	}
+	return db[n - 1].biaya + hitungTotalPendapatanServis(db, n - 1);
+}
+
 void menuServis(Servis db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 	int p;
 	do {
 		cout << "\n=== MENU SERVIS ===\n";
-		cout << "1. Tambah\n2. Lihat\n3. Urutkan berdasar Biaya\n4. Ubah Status\n5. Hapus\n0. Kembali\nPilih : ";
+		cout << "1. Tambah\n2. Lihat\n3. Urutkan berdasar Biaya\n4. Ubah Status\n5. Hapus\n6. Lihat Total Pendapatan\n0. Kembali\nPilih : ";
 		cin >> p;
 		if (cin.fail()) {
 			cin.clear();
@@ -463,6 +470,14 @@ void menuServis(Servis db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 			case 3: urutkanServis(db, *jml); break;
 			case 4: ubahStatusServis(db, *jml); break;
 			case 5: hapusServis(db, jml); break;
+			case 6:
+				if (*jml == 0) {
+					cout << "\nBelum ada data servis untuk dihitung.\n";
+				} else {
+					double total = hitungTotalPendapatanServis(db, *jml);
+					cout << "\n[INFO] Total Pendapatan dari " << *jml << " Servis: Rp" << fixed << setprecision(0) << total << "\n";
+				}
+				break;
 		}
 	} while(p != 0);
 }
@@ -570,11 +585,18 @@ void hapusRestorasi(Restorasi db[], int *jml) {
 	if (!ketemu) cout << "Data restorasi tidak ditemukan.\n";
 }
 
+double hitungTotalPendapatanRestorasi(Restorasi db[], int n) {
+	if (n <= 0) {
+		return 0; 
+	}
+	return db[n - 1].biaya + hitungTotalPendapatanRestorasi(db, n - 1);
+}
+
 void menuRestorasi(Restorasi db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 	int p;
 	do {
 		cout << "\n=== MENU RESTORASI ===\n";
-		cout << "1. Tambah\n2. Lihat\n3. Ubah Status\n4. Hapus\n0. Kembali\nPilih : ";
+		cout << "1. Tambah\n2. Lihat\n3. Ubah Status\n4. Hapus\n5. Lihat Total Pendapatan\n0. Kembali\nPilih : ";
 		cin >> p;
 		if (cin.fail()) {
 			cin.clear();
@@ -588,6 +610,14 @@ void menuRestorasi(Restorasi db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 			case 2: lihatRestorasi(db, *jml); break;
 			case 3: ubahStatusRestorasi(db, *jml); break;
 			case 4: hapusRestorasi(db, jml); break;
+			case 5:
+				if (*jml == 0) {
+					cout << "\nBelum ada data restorasi untuk dihitung.\n";
+				} else {
+					double total = hitungTotalPendapatanRestorasi(db, *jml);
+					cout << "\n[INFO] Total Pendapatan dari " << *jml << " Restorasi: Rp" << fixed << setprecision(0) << total << "\n";
+				}
+				break;
 		}
 	} while(p != 0);
 }
