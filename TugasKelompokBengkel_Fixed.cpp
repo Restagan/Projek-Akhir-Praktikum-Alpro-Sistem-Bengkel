@@ -205,24 +205,36 @@ void hapusPelanggan(Pelanggan db[], int *jml) {
 	if (!ketemu) cout << "Data pelanggan tidak ditemukan.\n";
 }
 
+void urutkanPelanggan(Pelanggan db[], int jml) {
+	for (int i = 0; i < jml - 1; i++) {
+		for (int j = 0; j < jml - i - 1; j++) {
+			if (db[j].id > db[j+1].id) {
+				Pelanggan temp = db[j];
+				db[j] = db[j+1];
+				db[j+1] = temp;
+			}
+		}
+	}
+	cout << "\n[Data Pelanggan telah diurutkan berdasarkan ID (Ascending)]\n";
+	lihatPelanggan(db, jml);
+}
+
 void menuPelanggan(Pelanggan db[], int *jml) {
 	int pilih;
 	do {
 		cout << "\n=== MENU PELANGGAN ===\n";
-		cout << "1. Tambah\n2. Lihat\n3. Cari\n4. Hapus\n0. Kembali\nPilih : ";
+		cout << "1. Tambah\n2. Lihat\n3. Cari\n4. Hapus\n5. Urutkan berdasar ID\n0. Kembali\nPilih : ";
 		cin >> pilih;
 		if (cin.fail()) {
-			cin.clear();
-			cin.ignore(10000, '\n');
-			cout << "\n[ERROR] Input tidak valid! Harap masukkan ANGKA.\n";
-			pilih = -1;
-			continue;
+			cin.clear(); cin.ignore(10000, '\n');
+			cout << "\n[ERROR] Input tidak valid!\n"; pilih = -1; continue;
 		}
 		switch(pilih) {
 			case 1: tambahPelanggan(db, jml); break;
 			case 2: lihatPelanggan(db, *jml); break;
 			case 3: cariPelanggan(db, *jml); break;
 			case 4: hapusPelanggan(db, jml); break;
+			case 5: urutkanPelanggan(db, *jml); break;
 		}
 	} while(pilih != 0);
 }
@@ -307,23 +319,35 @@ void hapusKendaraan(Kendaraan db[], int *jml) {
 	if (!ketemu) cout << "Data kendaraan tidak ditemukan.\n";
 }
 
+void urutkanKendaraan(Kendaraan db[], int jml, Pelanggan dbPel[], int jmlPel) {
+	for (int i = 0; i < jml - 1; i++) {
+		for (int j = 0; j < jml - i - 1; j++) {
+			if (db[j].id > db[j+1].id) {
+				Kendaraan temp = db[j];
+				db[j] = db[j+1];
+				db[j+1] = temp;
+			}
+		}
+	}
+	cout << "\n[Data Kendaraan telah diurutkan berdasarkan ID (Ascending)]\n";
+	lihatKendaraan(db, jml, dbPel, jmlPel);
+}
+
 void menuKendaraan(Kendaraan db[], int *jml, Pelanggan dbPel[], int jmlPel) {
 	int p;
 	do {
 		cout << "\n=== MENU KENDARAAN ===\n";
-		cout << "1. Tambah\n2. Lihat\n3. Hapus\n0. Kembali\nPilih : ";
+		cout << "1. Tambah\n2. Lihat\n3. Hapus\n4. Urutkan berdasar ID\n0. Kembali\nPilih : ";
 		cin >> p;
 		if (cin.fail()) {
-			cin.clear();
-			cin.ignore(10000, '\n');
-			cout << "\n[ERROR] Input tidak valid! Harap masukkan ANGKA.\n";
-			p = -1;
-			continue;
+			cin.clear(); cin.ignore(10000, '\n');
+			cout << "\n[ERROR] Input tidak valid!\n"; p = -1; continue;
 		}
 		switch(p) {
 			case 1: tambahKendaraan(db, jml, dbPel, jmlPel); break; 
 			case 2: lihatKendaraan(db, *jml, dbPel, jmlPel); break;
 			case 3: hapusKendaraan(db, jml); break;
+			case 4: urutkanKendaraan(db, *jml, dbPel, jmlPel); break;
 		}
 	} while(p != 0);
 }
@@ -391,16 +415,29 @@ void lihatServis(Servis db[], int jml) {
 }
 
 void urutkanServis(Servis db[], int jml) {
+	int jenis;
+	cout << "\nPilih Urutan Biaya Servis:\n1. Termurah ke Termahal (Ascending)\n2. Termahal ke Termurah (Descending)\nPilih : ";
+	cin >> jenis;
+	if (cin.fail() || (jenis != 1 && jenis != 2)) {
+		cin.clear(); cin.ignore(10000, '\n');
+		cout << "[ERROR] Pilihan tidak valid!\n";
+		return;
+	}
+
 	for (int i = 0; i < jml - 1; i++) {
 		for (int j = 0; j < jml - i - 1; j++) {
-			if (db[j].biaya < db[j+1].biaya) {
+			bool tukar = false;
+			if (jenis == 1 && db[j].biaya > db[j+1].biaya) tukar = true;      // Ascending
+			else if (jenis == 2 && db[j].biaya < db[j+1].biaya) tukar = true; // Descending
+			
+			if (tukar) {
 				Servis temp = db[j];
 				db[j] = db[j+1];
 				db[j+1] = temp;
 			}
 		}
 	}
-	cout << "\n[Data telah diurutkan dari biaya tertinggi]\n";
+	cout << "\n[Data Servis berhasil diurutkan]\n";
 	lihatServis(db, jml);
 }
 
@@ -592,32 +629,53 @@ double hitungTotalPendapatanRestorasi(Restorasi db[], int n) {
 	return db[n - 1].biaya + hitungTotalPendapatanRestorasi(db, n - 1);
 }
 
+void urutkanRestorasi(Restorasi db[], int jml) {
+	int jenis;
+	cout << "\nPilih Urutan Biaya Restorasi:\n1. Termurah ke Termahal (Ascending)\n2. Termahal ke Termurah (Descending)\nPilih : ";
+	cin >> jenis;
+	if (cin.fail() || (jenis != 1 && jenis != 2)) {
+		cin.clear(); cin.ignore(10000, '\n');
+		cout << "[ERROR] Pilihan tidak valid!\n";
+		return;
+	}
+
+	for (int i = 0; i < jml - 1; i++) {
+		for (int j = 0; j < jml - i - 1; j++) {
+			bool tukar = false;
+			if (jenis == 1 && db[j].biaya > db[j+1].biaya) tukar = true;      // Ascending
+			else if (jenis == 2 && db[j].biaya < db[j+1].biaya) tukar = true; // Descending
+			
+			if (tukar) {
+				Restorasi temp = db[j];
+				db[j] = db[j+1];
+				db[j+1] = temp;
+			}
+		}
+	}
+	cout << "\n[Data Restorasi berhasil diurutkan]\n";
+	lihatRestorasi(db, jml);
+}
+
 void menuRestorasi(Restorasi db[], int *jml, Kendaraan dbKen[], int jmlKen) {
 	int p;
 	do {
 		cout << "\n=== MENU RESTORASI ===\n";
-		cout << "1. Tambah\n2. Lihat\n3. Ubah Status\n4. Hapus\n5. Lihat Total Pendapatan\n0. Kembali\nPilih : ";
+		cout << "1. Tambah\n2. Lihat\n3. Ubah Status\n4. Hapus\n5. Lihat Total Pendapatan\n6. Urutkan berdasar Biaya\n0. Kembali\nPilih : ";
 		cin >> p;
 		if (cin.fail()) {
-			cin.clear();
-			cin.ignore(10000, '\n');
-			cout << "\n[ERROR] Input tidak valid! Harap masukkan ANGKA.\n";
-			p = -1;
-			continue;
+			cin.clear(); cin.ignore(10000, '\n');
+			cout << "\n[ERROR] Input tidak valid!\n"; p = -1; continue;
 		}
 		switch(p) {
 			case 1: tambahRestorasi(db, jml, dbKen, jmlKen); break;
 			case 2: lihatRestorasi(db, *jml); break;
 			case 3: ubahStatusRestorasi(db, *jml); break;
 			case 4: hapusRestorasi(db, jml); break;
-			case 5:
-				if (*jml == 0) {
-					cout << "\nBelum ada data restorasi untuk dihitung.\n";
-				} else {
-					double total = hitungTotalPendapatanRestorasi(db, *jml);
-					cout << "\n[INFO] Total Pendapatan dari " << *jml << " Restorasi: Rp" << fixed << setprecision(0) << total << "\n";
-				}
+			case 5: 
+				if (*jml == 0) cout << "\nBelum ada data restorasi.\n";
+				else cout << "\n[INFO] Total Pendapatan: Rp" << fixed << setprecision(0) << hitungTotalPendapatanRestorasi(db, *jml) << "\n";
 				break;
+			case 6: urutkanRestorasi(db, *jml); break;
 		}
 	} while(p != 0);
 }
